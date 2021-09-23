@@ -22,11 +22,28 @@ type HashingFunc func(int, int) int
 type ProbingFunc func(int, int) int
 
 type HashTable[T comparable] struct {
-	col      []Node[T]
-	hashFunc HashingFunc
+	col       []Node[T]
+	length    int
+	hashFunc  HashingFunc
+	probeFunc ProbingFunc
 }
 
-func Add(ht HashTable[T])
+func New[T comparable](length int) *HashTable[T] {
+	h := HashTable[T]{
+		col:       make([]Node[T], length),
+		length:    length,
+		hashFunc:  HashFunc,
+		probeFunc: LinearProbe,
+	}
+	return &h
+}
+
+func (ht HashTable[T]) Add(key int, value T) T {
+	hash := ht.hashFunc(key, ht.length)
+	if ht.col[hash] == nil {
+
+	}
+}
 
 func pow(a int, b int) int {
 	sign := 1
