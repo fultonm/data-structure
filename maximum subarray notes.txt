@@ -1,0 +1,94 @@
+https://leetcode.com/problems/maximum-subarray/discuss/20452/C%2B%2B-DP-and-Divide-and-Conquer
+
+
+
+In the Divide-and-Conquer algorithm, it needs to be noticed that we should initialize both mr and ml with an enough small number.
+
+class Solution {
+public:
+
+    int divideandconquer(vector<int>&nums, int left, int right)
+    {
+        //conquer
+        if (left==right)
+        {
+            return nums.at(left);
+        }
+
+        int mid = (left + right) / 2;
+
+        // divide
+        int leftMax = divideandconquer(nums, left, mid);
+
+        int rightMax = divideandconquer(nums, mid+1, right);
+
+        // merge
+        int ml= -1e6,  mr = -1e6;
+
+        for (int i=mid+1, sum=0;i<=right;i++)
+        {
+            sum += nums.at(i);
+
+            if (sum > mr) mr = sum;
+        }
+
+        for (int i=mid, sum=0;i>=left;i--)
+        {
+            sum += nums.at(i);
+
+            if (sum > ml) ml = sum;
+        }
+
+        int crossMax = ml + mr;
+
+        int maximum = max(max(leftMax, rightMax), crossMax);
+
+        return maximum;
+    }
+
+    int maxSubArray(vector<int>& nums) {
+
+        return divideandconquer(nums, 0, nums.size()-1);
+
+    }
+};
+
+
+The time complexity of your Divide and Conquer approach is O(nlgn) instead of O(n). My O(n) Divide and Conquer implementation is provided below:
+
+class Solution {
+public int maxSubArray(int[] nums) {
+
+    // use divide and conquer: store current max sum of left-attached
+    // subarray, max sum of right-attached subarray, max sum, and sum
+    // Time: O(n) because f(n) = 2 * f(n/2) + O(1) => f(n)=O(n)
+    // Space: O(lgn) because the runtime stack is of maximum depth O(lgn)
+    
+    
+    int n = nums.length;
+    if (n == 0)
+        return 0;
+    
+    return helper(0, n - 1, nums)[2];
+    
+}
+
+private int[] helper(int left, int right, int[] nums) {
+    // return values: leftMax, rightMax, max, sum
+    
+    if (left == right)
+        return new int[]{nums[left], nums[right], nums[left], nums[left]};
+    
+    int mid = (left + right) / 2;
+    int[] leftSums = helper(left, mid, nums),
+          rightSums = helper(mid + 1, right, nums);
+    
+    return new int[]{Math.max(leftSums[0], leftSums[3] + rightSums[0]),
+                     Math.max(rightSums[1], rightSums[3] + leftSums[1]),
+                     Math.max(leftSums[1] + rightSums[0], 
+                              Math.max(leftSums[2], rightSums[2])),
+                     leftSums[3] + rightSums[3]};
+    
+}
+
+}
